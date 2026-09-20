@@ -4,7 +4,7 @@ This README provides documentation for the R scripts used to process positioning
 
 # Positioning Error Analysis and Visualisation
 
-This repository contains two primary R scripts designed to analyse Global Navigation Satellite System (GNSS) positioning errors in Iqaluit, NU, Canada (2014).
+This repository contains two primary R scripts designed to analyse Global Navigation Satellite System (GNSS) positioning errors in Iqaluit, Nunavut (NU), Canada, and Darwin, Northern Territory (NT), Australia (2014).
 
 ## 1. Scripts Overview
 
@@ -29,6 +29,21 @@ This repository contains two primary R scripts designed to analyse Global Naviga
 - **Formatting:** Applies scientific notation (`plotmath`) to legend labels and ensures all labels are tangentially rotated for readability.
 - **Output Files:** Saves high-resolution PDF files.
 
+### `mean_compare.R`
+
+**Purpose:** Generates results for inferential statistical tests for the manuscript.
+- **Rayleigh Test for Uniformity:** Tests if there is a statistically significant difference between the menas of horizontal errors for the two locations.
+- **Welch Two Sample $t$-test (Parametric)**
+- **Wilcoxon Rank-Sum Exact Test (Non-Parametric)**
+- **Output Files:** No files, the output is generate in the terminal.
+
+### `stat_test.R`
+**Purpose:** Generates results for inferential circular statistical tests for the manuscript.
+- **Rayleigh Test for Uniformity:** Tests if the errors are randomly distributed across the 24 hours (Null Hypothesis) or if they have a significant directional (temporal) cluster (Alternative Hypothesis, p < 0.05 indicates clustering).
+- **Watson-Williams Tests (Circular ANOVA):** Compares the mean angular directions (peak error times) between different storms.
+- **Mardia-Watson-Wheeler Tests (Non-Parametric):** Evaluates whether two or more circular distributions are identical and it is robust against low concentration parameters and non-von Mises distributions.
+- **Output Files:** No files, the output is generate in the terminal.
+
 ---
 
 ## 2. Requirements
@@ -50,14 +65,16 @@ install.packages(c("circular", "tidyverse", "dplyr", "tidyr", "lubridate", "geos
 The scripts expect the following directory structure:
 ```text
 .
-├── make_time_series_Darwin.R
-├── make_time_series.R
-├── make_circular_plot_Darwin.R
-├── make_circular_plot.R
 ├── Darwin_2014_POS/
 │   └── (Multiple .pos files)
 ├── Iqaluit_2014_POS/
 │   └── (Multiple .pos files)
+├── make_circular_plot_Darwin.R
+├── make_circular_plot.R
+├── make_time_series_Darwin.R
+├── make_time_series.R
+├── means_compare.R
+├── stat_test.R
 ```
 
 ---
@@ -66,14 +83,15 @@ The scripts expect the following directory structure:
 
 1.  **Process Data:** Run `make_time_series.R` and `make_time_series_Darwin.R` first. This will crawl the "Storm" folders, calculate errors, generate the necessary `.csv` files, and produce the time-series PDF plots.
 2.  **Generate Circular Plots:** Run `make_circular_plot.R` and `make_circular_plot_Darwin.R`. It will look for the `.csv` files produced in the previous step and generate the polar distribution plots.
+3. **Conduct Statistical Tests** Run `means_compare.R` and `stat_test.R`. You can observe the test statistics and $p$-values in the terminal output.
 
 ---
 
 ## 5. Reference Coordinates
 The scripts `make_time_series_Darwin.R` and `make_circular_plot_Darwin.R` use the Darwin, NT, Australia reference point for error calculation:
-- **Longitude:** 131.1327361
-- **Latitude:** -12.8437111
-- **Height:** 125.2 m
+- **Longitude:** 131.132744
+- **Latitude:** -12.843697
+- **Height:** 125.1 m
 The scripts `make_time_series.R` and `make_circular_plot.R` use the Iqaluit, NU, Canada reference point for error calculation:
 - **Longitude:** -68.510497
 - **Latitude:** 63.755964
