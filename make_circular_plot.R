@@ -42,6 +42,7 @@ to_pm <- function(v) {
   e <- floor(log10(abs(v)))
   m <- v / 10^e
   if (e == 0) return(sprintf("%.2f", m))
+  if (e == 1) return(sprintf("%.2f", m * 10))
   sprintf("%.2f %%*%% 10^%d", m, e) 
 }
 
@@ -86,8 +87,7 @@ for (filteru in 0:1) {
     val_bins_end <- seq(min(df[[var_end]], na.rm = TRUE), max(df[[var_end]], na.rm = TRUE), length.out = num_groups_second + 1)
     print(val_bins_end)
   } else {
-    val_bins_end <- seq(min(dff[[var_end]], na.rm = TRUE), max(dff[[var_end]], na.rm = TRUE), length.out = num_groups_second)
-    val_bins_end <- c(val_bins_end, max(df[[var_end]], na.rm = TRUE))
+    val_bins_end <- c(min(df[[var_end]], na.rm = TRUE), 2, 4, 6, 8, 10, max(df[[var_end]], na.rm = TRUE))
     print(val_bins_end)
   }
   
@@ -155,13 +155,13 @@ for (filteru in 0:1) {
     geom_hline(yintercept = seq(0, 1, 0.1), color = "gray40", linewidth = 0.4) +
     
     # Draw the wedges
-    geom_col(width = 0.85, color = "black", linewidth = 0.5, position = position_stack(reverse = TRUE)) +
+    geom_col(width = 0.95, color = "black", linewidth = 0.5, position = position_stack(reverse = TRUE)) +
     
     # Draw the rotating wedge percentage labels 
     geom_text(aes(label = label_text1, color = text_color, angle = text_angle), 
-              position = position_stack(vjust = 0.55, reverse = TRUE), size = 3.5, show.legend = FALSE) +
+              position = position_stack(vjust = 0.5, reverse = TRUE), size = 3, show.legend = FALSE) +
     geom_text(aes(label = label_text2, color = text_color, angle = text_angle), 
-              position = position_stack(vjust = 0.9, reverse = TRUE), size = 5, show.legend = FALSE) +
+              position = position_stack(vjust = 0.7, reverse = TRUE), size = 3, show.legend = FALSE) +
     scale_color_identity() +
     
     # Draw the 0% to 100% labels exactly centered in the gap
