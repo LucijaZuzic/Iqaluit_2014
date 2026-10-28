@@ -54,6 +54,8 @@ get_circular_peaks <- function(storm_num, dfpv) {
   return(circ_data)
 }
 
+set.seed(42) # Ensure reproducible random tie-breaking in watson.wheeler.test
+
 for (dfpv1 in c(0, 0.75)) {
   # 0 = full dataset, 0.75 = top 25% peak errors (Q3+)
   cat("\n######################################################\n")
