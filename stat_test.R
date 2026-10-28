@@ -54,46 +54,28 @@ get_circular_peaks <- function(storm_num, dfpv) {
   return(circ_data)
 }
 
-for (dfpv1 in c(0, 0.25, 0.5, 0.75)) {
-  # --- 1. Load the Circular Data for All Locations ---
-  cat("Loading data and converting to circular objects...\n")
+for (dfpv1 in c(0, 0.75)) {
+  # 0 = full dataset, 0.75 = top 25% peak errors (Q3+)
+  cat("\n######################################################\n")
+  cat("QUANTILE THRESHOLD:", dfpv1, "\n")
+  cat("######################################################\n")
+  
   storm1 <- get_circular_peaks("", dfpv1)
   storm2 <- get_circular_peaks("Darwin_", dfpv1)
-  print(dfpv1)
   
-  # --- 2. Rayleigh Test for Uniformity ---
-  # Tests if the errors are randomly distributed across the 24 hours (Null Hypothesis)
-  # or if they have a significant directional (temporal) cluster (Alternative Hypothesis).
-  cat("\n======================================================\n")
-  cat("RAYLEIGH TEST FOR UNIFORMITY (p < 0.05 indicates clustering)\n")
-  cat("======================================================\n")
+  # Circular Summary Parameters (Mean Direction & Resultant Length R-bar)
+  cat("Iqaluit Circular Mean (hrs):", as.numeric(mean.circular(storm1)) %% 24, 
+      "Resultant Length (rho):", rho.circular(storm1), "\n")
+  cat("Darwin Circular Mean (hrs):", as.numeric(mean.circular(storm2)) %% 24, 
+      "Resultant Length (rho):", rho.circular(storm2), "\n")
   
+  # Rayleigh Test for Uniformity
   print(rayleigh.test(storm1))
   print(rayleigh.test(storm2))
   
-  # --- 3. Watson-Williams Tests (Circular ANOVA) ---
-  # Compares the mean angular directions (peak error times) between different locations.
-  cat("\n======================================================\n")
-  cat("WATSON-WILLIAMS TESTS (Comparing Subclasses)\n")
-  cat("======================================================\n")
+  # Watson-Williams Test
+  print(watson.williams.test(list(storm1, storm2)))
   
-  
-  cat("\n--- Test: Iqaluit vs. Darwin ---\n")
-  cat("Hypothesis: They belong to the SAME subclass (Expect p > 0.05)\n")
-  ww_1_vs_2 <- watson.williams.test(list(storm1, storm2))
-  print(ww_1_vs_2)
-  
-  # --- 4. Mardia-Watson-Wheeler Tests (Non-Parametric) ---
-  # The MWW test evaluates whether two or more circular distributions are identical.
-  # It is robust against low concentration parameters and non-von Mises distributions.
-  
-  cat("\n======================================================\n")
-  cat("MARDIA-WATSON-WHEELER TESTS (Non-Parametric Comparisons)\n")
-  cat("======================================================\n")
-  
-  cat("\n--- Test: Iqaluit vs. Darwin ---\n")
-  cat("Hypothesis: Distributions are identical (Expect p > 0.05 if same subclass)\n")
-  mww_1_vs_2 <- watson.wheeler.test(list(storm1, storm2))
-  print(mww_1_vs_2)
-  break
+  # Mardia-Watson-Wheeler Test
+  print(watson.wheeler.test(list(storm1, storm2)))
 }
